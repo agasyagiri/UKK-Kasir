@@ -11,7 +11,7 @@ export default function Layout() {
       w={"100vw"}
       maxW="100%"
       bgColor={"white"}
-      backgroundImage="url('../../src/assets/bg-layout1.png')" // Path ke gambar background
+      backgroundImage="url('/src/assets/bg-layout1.png')" // Path ke gambar background
       backgroundSize="cover" // Gambar akan menutupi seluruh layar
       backgroundPosition="center" // Gambar akan di posisi tengah
       backgroundRepeat="no-repeat" // Gambar tidak diulang

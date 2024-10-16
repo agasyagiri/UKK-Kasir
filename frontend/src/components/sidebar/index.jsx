@@ -54,7 +54,7 @@ export default function Sidebar() {
 
           {/* Logo untuk Desktop */}
           <Image
-            src="../../src/assets/image-login.png"
+            src="/src/assets/image-login.png"
             alt="Logo WIKUSAMA Cafe"
             boxSize="150px"
             display={{ base: "none", md: "block" }} // Menyembunyikan logo mobile
@@ -64,7 +64,7 @@ export default function Sidebar() {
           />
           {/* Logo untuk Mobile */}
           <Image
-            src="../../src/assets/image-login.png"
+            src="/src/assets/image-login.png"
             alt="Logo WIKUSAMA Cafe"
             boxSize="130px"
             display={{ base: "block", md: "none" }}
