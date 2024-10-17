@@ -64,7 +64,7 @@ export default function Index() {
         gap={5}
         w={"full"}
         pt={{ base: "100", md: "12" }} // Padding top lebih besar di layar sedang
-        mt={{md: "12" }} // Margin top lebih besar di layar sedang
+        mt={{ md: "12" }} // Margin top lebih besar di layar sedang
       >
         {/* Heading Dashboard */}
         <HeadingDashboard text="Selamat Datang di Dashboard Admin" />
@@ -76,102 +76,75 @@ export default function Index() {
         <SimpleGrid
           columns={{ base: 1, sm: 2, md: 2, lg: 3 }} // Kolom responsif: 1 di layar kecil, 2 di layar sedang, 3 di layar besar
           spacing={6} // jarak antar grid items
-          mt={10}
+          mt={"50px"}
           w={"full"}
           px={{ base: 4, md: 8 }} // Padding horizontal yang berbeda untuk layar kecil dan sedang
         >
-          {/* Box untuk menampung card */}
-          <Box
-            p={5}
-            borderWidth="1px"
-            borderRadius="lg"
-            bg={useColorModeValue("gray.50", "gray.800")}
-            boxShadow="md"
+          {/* Card untuk jumlah user */}
+          <Card
+            bg={"#0C359E"}
+            borderRadius="xl" // custom border radius
+            boxShadow="2xl" // lebih besar shadow
+            _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
+            transition="0.4s"
+            aspectRatio={1} // membuat card berbentuk persegi
           >
-            {/* Card untuk jumlah user */}
-            <Card
-              bg={"#0C359E"}
-              borderRadius="xl" // custom border radius
-              boxShadow="2xl" // lebih besar shadow
-              _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
-              transition="0.4s"
-              aspectRatio={1} // membuat card berbentuk persegi
-            >
-              <CardHeader display="flex" alignItems="center" justifyContent="center">
-                <Box as={FaUser} size="28px" color="white" _hover={{ transition: "0.5s" }} />
-                <Heading size="md" mt="5px" color="white" ml={3}>
-                  Jumlah User
-                </Heading>
-              </CardHeader>
-              <CardBody>
-                <Text fontSize="3xl" fontWeight="bold" color="white">
-                  {jumlahUser}
-                </Text>
-              </CardBody>
-            </Card>
-          </Box>
+            <CardHeader display="flex" alignItems="center" justifyContent="center">
+              <Box as={FaUser} size="28px" color="white" _hover={{ transition: "0.5s" }} />
+              <Heading size="md" mt="5px" color="white" ml={3}>
+                Jumlah User
+              </Heading>
+            </CardHeader>
+            <CardBody>
+              <Text fontSize="3xl" fontWeight="bold" color="white">
+                {jumlahUser}
+              </Text>
+            </CardBody>
+          </Card>
 
-          {/* Box untuk card jumlah meja */}
-          <Box
-            p={5}
-            borderWidth="1px"
-            borderRadius="lg"
-            bg={useColorModeValue("gray.50", "gray.800")}
-            boxShadow="md"
+          {/* Card untuk jumlah meja */}
+          <Card
+            bg={"#0C359E"}
+            borderRadius="xl"
+            boxShadow="2xl"
+            _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
+            transition="0.4s"
+            aspectRatio={1}
           >
-            {/* Card untuk jumlah meja */}
-            <Card
-              bg={"#0C359E"}
-              borderRadius="xl"
-              boxShadow="2xl"
-              _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
-              transition="0.4s"
-              aspectRatio={1}
-            >
-              <CardHeader display="flex" alignItems="center" justifyContent="center">
-                <Box as={MdDining} size="35px" color="white" _hover={{ transition: "0.5s" }} /> {/* Icon Meja */}
-                <Heading size="md" mt="5px" color="white" ml={3}>
-                  Jumlah Meja
-                </Heading>
-              </CardHeader>
-              <CardBody>
-                <Text fontSize="3xl" fontWeight="bold" color="white">
-                  {jumlahMeja}
-                </Text>
-              </CardBody>
-            </Card>
-          </Box>
+            <CardHeader display="flex" alignItems="center" justifyContent="center">
+              <Box as={MdDining} size="35px" color="white" _hover={{ transition: "0.5s" }} /> {/* Icon Meja */}
+              <Heading size="md" mt="5px" color="white" ml={3}>
+                Jumlah Meja
+              </Heading>
+            </CardHeader>
+            <CardBody>
+              <Text fontSize="3xl" fontWeight="bold" color="white">
+                {jumlahMeja}
+              </Text>
+            </CardBody>
+          </Card>
 
-          {/* Box untuk card jumlah menu */}
-          <Box
-            p={5}
-            borderWidth="1px"
-            borderRadius="lg"
-            bg={useColorModeValue("gray.50", "gray.800")}
-            boxShadow="md"
+          {/* Card untuk jumlah menu */}
+          <Card
+            bg={"#0C359E"}
+            borderRadius="xl"
+            boxShadow="2xl"
+            _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
+            transition="0.4s"
+            aspectRatio={1}
           >
-            {/* Card untuk jumlah menu */}
-            <Card
-              bg={"#0C359E"}
-              borderRadius="xl"
-              boxShadow="2xl"
-              _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
-              transition="0.4s"
-              aspectRatio={1}
-            >
-              <CardHeader display="flex" alignItems="center" justifyContent="center">
-                <Box as={MdDinnerDining} size="35px" color="white" _hover={{ transition: "0.5s" }} /> {/* Icon Menu */}
-                <Heading size="md" mt="5px" color="white" ml={3}>
-                  Jumlah Menu
-                </Heading>
-              </CardHeader>
-              <CardBody>
-                <Text fontSize="3xl" fontWeight="bold" color="white">
-                  {jumlahMenu}
-                </Text>
-              </CardBody>
-            </Card>
-          </Box>
+            <CardHeader display="flex" alignItems="center" justifyContent="center">
+              <Box as={MdDinnerDining} size="35px" color="white" _hover={{ transition: "0.5s" }} /> {/* Icon Menu */}
+              <Heading size="md" mt="5px" color="white" ml={3}>
+                Jumlah Menu
+              </Heading>
+            </CardHeader>
+            <CardBody>
+              <Text fontSize="3xl" fontWeight="bold" color="white">
+                {jumlahMenu}
+              </Text>
+            </CardBody>
+          </Card>
         </SimpleGrid>
       </Box>
     </Container>

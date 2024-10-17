@@ -129,8 +129,8 @@ export default function index() {
   return (
     <Container>
       <Box
-        textAlign={{ base: "center", md: "left" }} // Pusatkan teks pada layar kecil dan sedang
-        pt={{ base: "100", md: "12" }} // Padding top lebih besar di layar sedang
+        textAlign={{ md: "left" }} // Pusatkan teks pada layar kecil dan sedang
+        pt={{ base: "100", md: "1" }} // Padding top lebih besar di layar sedang
       >
         <Text
           cursor={"pointer"}
@@ -169,16 +169,16 @@ export default function index() {
         </Flex>
         {/* menampilkan alert notifikasi */}
         <AlertNotification status={status} message={message} />
-        <Box>
+        <Box px={{ base: 2, md: 6 }} py={4}>
           <Grid
-            templateColumns={{ md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
-            gap={10}
+            templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+            gap={{ base: 5, md: 10 }}
             my={6}
           >
             {/* Input fields yang sudah ada */}
             <GridItem>
               <Flex direction="column">
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
+                <Text fontSize={{ base: "xs", md: "sm" }} fontFamily="Poppins">
                   Tanggal Transaksi
                 </Text>
                 <Input
@@ -191,8 +191,9 @@ export default function index() {
                   isReadOnly
                 />
               </Flex>
+
               <Flex direction="column" my={4}>
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
+                <Text fontSize={{ base: "xs", md: "sm" }} fontFamily="Poppins">
                   Status Pembayaran
                 </Text>
                 <Input
@@ -212,9 +213,10 @@ export default function index() {
                 )}
               </Flex>
             </GridItem>
+
             <GridItem>
               <Flex direction="column">
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
+                <Text fontSize={{ base: "xs", md: "sm" }} fontFamily="Poppins">
                   Nomor Meja
                 </Text>
                 <Input
@@ -227,8 +229,9 @@ export default function index() {
                   isReadOnly
                 />
               </Flex>
+
               <Flex direction="column" my={4}>
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
+                <Text fontSize={{ base: "xs", md: "sm" }} fontFamily="Poppins">
                   Status Meja
                 </Text>
                 <Input
@@ -249,9 +252,10 @@ export default function index() {
                 )}
               </Flex>
             </GridItem>
+
             <GridItem>
               <Flex direction="column">
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
+                <Text fontSize={{ base: "xs", md: "sm" }} fontFamily="Poppins">
                   Nama Pelanggan
                 </Text>
                 <Input
@@ -274,10 +278,10 @@ export default function index() {
             </GridItem>
           </Grid>
 
-          <Heading text="Detail Pemesanan" my={4} /> {/* Heading untuk detail pemesanan */}
+          <Heading text="Detail Pemesanan" my={4} fontSize={{ base: "md", md: "lg" }} />
 
-          {/* Table detail pemesanan*/}
-          <Table variant="simple" size="lg" my={4}>
+          {/* Table detail pemesanan */}
+          <Table variant="simple" size={{ base: "sm", md: "lg" }} my={4}>
             <Thead>
               <Tr>
                 <Th>Nama Menu</Th>
@@ -297,17 +301,26 @@ export default function index() {
               ))}
             </Tbody>
           </Table>
-          <Divider borderColor="black" my={2} h="1px" mr={500} /> {/* Garis pembatas digeser ke kiri */}
+
+          <Divider borderColor="black" my={2} h="1px" mr={{ base: 0, md: 500 }} />
 
           {kolomMenu.length > 0 && (
             <Flex justifyContent="space-between" alignItems="center" mb={2}>
-              {/* Tulisan "Total Harga" di sebelah kiri */}
-              <Text fontSize={"md"} fontFamily={"Poppins"} fontWeight={"bold"} ml={5}>
+              <Text
+                fontSize={{ base: "sm", md: "md" }}
+                fontFamily="Poppins"
+                fontWeight="bold"
+                ml={{ base: 0, md: 5 }}
+              >
                 Total Harga
               </Text>
 
-              {/* Total harga di sebelah kanan */}
-              <Text fontSize={"md"} fontFamily={"Poppins"} fontWeight={"bold"} mr={"125px"}>
+              <Text
+                fontSize={{ base: "sm", md: "md" }}
+                fontFamily="Poppins"
+                fontWeight="bold"
+                mr={{ base: 0, md: "125px" }}
+              >
                 {convertToRupiah(kolomMenu.reduce((total, item) => total + item.harga, 0))}
               </Text>
             </Flex>
