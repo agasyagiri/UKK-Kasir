@@ -10,26 +10,33 @@ import {
   Select,
   Button,
   Stack,
-  Box
+  Box,
+  useColorModeValue,
+  SimpleGrid,
+  FormHelperText,
+  Image,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Td,
+  Tbody,
+  Divider,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Heading from "../../../components/text/Heading";
 import Container from "../../../components/container/Container";
 import { getAllMenu, addDetailTransaksi } from "./fragments/ApiHandler";
-import { MdPayment } from "react-icons/md"
-import { FaTrashAlt } from "react-icons/fa"
-import { IoIosArrowDropleftCircle } from "react-icons/io"
-import { IoMdAddCircleOutline } from "react-icons/io"
-import {
-  addTransaksi,
-  updateStatusMeja,
-  getMejaByStatus,
-} from "../transaksi/fragments/ApiHandler";
+import { MdPayment } from "react-icons/md";
+import { FaTrashAlt } from "react-icons/fa";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { addTransaksi, updateStatusMeja, getMejaByStatus } from "../transaksi/fragments/ApiHandler";
 import AlertNotification from "../../../components/alert";
 import { LOCAL_STORAGE_USER } from "../../../utils/constants";
 import { getLocalStorage, clearLocalStorage } from "../../../utils/helper/localStorage";
 import { convertToRupiah } from "../../../utils/routes/FormatRupiahs";
+import { BASE_API_IMAGE } from "../../../../src/utils/constants";
 
 // buat komponen index
 export default function index() {
@@ -48,6 +55,7 @@ export default function index() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [status, setStatus] = useState(null);
+  const borderColor = useColorModeValue("gray.200", "gray.600");
 
   // fungsi untuk mengambil data meja
   const getDataMeja = async () => {
@@ -65,126 +73,92 @@ export default function index() {
 
   // fungsi untuk handle submit transaksi
   const submitHandlerTransaksi = async (values) => {
-    // set loading menjadi true
     setLoading(true);
     const value = {
-      ...values, // memeberikan nilai pada value berdasarkan nilai pada values
+      ...values,
       id_user: user.id_user,
     };
 
-    // panggil fungsi addTransaksi
     const res = await addTransaksi(value);
     await updateStatusMeja(values.id_meja, { status: "terisi" });
-    // panggil fungsi addTransaksi
-    // promise untuk menunggu fungsi addDetailTransaksi selesai
-    await new Promise((resolve) => {
-      // looping data pada state kolomMenu
-      for (let i = 0; i < kolomMenu.length; i++) {
-        // deklarasi variabel value
-        const value = {
-          id_transaksi: res.data.id_transaksi,
-          id_menu: kolomMenu[i].id_menu,
-          jumlah: kolomMenu[i].jumlah,
-          harga: kolomMenu[i].total_harga,
-        };
-        // panggil fungsi addDetailTransaksi
-        addDetailTransaksi(value);
-      }
-      // resolve promise setelah looping selesai
-      // resolve promise digunakan agar fungsi addDetailTransaksi selesai
-      resolve();
-    });
-    // set message dan status dari respon
+
+    await Promise.all(kolomMenu.map(async (item) => {
+      const value = {
+        id_transaksi: res.data.id_transaksi,
+        id_menu: item.id_menu,
+        jumlah: item.jumlah,
+        harga: item.total_harga,
+      };
+      await addDetailTransaksi(value);
+    }));
+
     setMessage(res.message);
     setStatus(res.status);
 
-    // // jika status respon adalah success
     if (res.status === "success") {
-      // set loading menjadi false dan reset form setelah 500ms
       setTimeout(() => {
-        reset(),
-          setStatus(""),
-          setMessage(""),
-          setLoading(false),
-          navigate("/dashboard/kasir/transaksi");
+        reset();
+        setStatus("");
+        setMessage("");
+        setLoading(false);
+        navigate("/dashboard/kasir/transaksi");
       }, 500);
-      return;
-    }
-    // jika status respon bukan success
-    else {
-      // set loading menjadi false dan reset form setelah 1000ms
+    } else {
       setTimeout(() => {
-        setLoading(false), setMessage(""), setStatus("");
+        setLoading(false);
+        setMessage("");
+        setStatus("");
       }, 1000);
     }
   };
 
   // fungsi untuk mengubah data pada state kolomMenu
   const handleChange = (e, indexRow, type) => {
-    // ambil value dari input
     const value = e?.target?.value;
-    // ubah data pada state kolomMenu
     setKolomMenu((prev) =>
-      // map data pada state kolomMenu untuk mengubah data
       prev.map((item, idx) => {
-        // jika index data sama dengan indexRow
         if (idx === indexRow) {
-          // jika type adalah jumlah
           if (type === "jumlah") {
-            // ubah data jumlah dan total_harga
             if (item.jumlah < 0) {
-              // jika jumlah kurang dari 0, maka jumlahnya menjadi 0
               item.jumlah = 0;
               item.total_harga = 0;
             } else {
-              // jika jumlah lebih dari 0, maka jumlahnya menjadi value
-              item.jumlah = e;
-              // menghitung total harga dengan mengalikan harga dengan jumlah
+              item.jumlah = value;
               item.total_harga = item.harga * item.jumlah;
             }
-          }
-          // jika type bukan jumlah
-          else {
-            // ubah data nama_menu, id_menu, dan harga
+          } else {
             item.nama_menu = value;
-            // cari data menu berdasarkan nama menu
             const menuNew = menu.find((item) => item.nama_menu === value);
             item.id_menu = menuNew.id_menu;
             item.harga = menuNew.harga;
           }
         }
-        // kembalikan data
         return item;
       })
     );
   };
 
   // fungsi untuk menambahkan baris pada tabel menu
-  const handleAddRow = () => {
-    // tambahkan data baru ke dalam state kolomMenu
+  const handleAddRow = (newMenu) => {
     setKolomMenu((prev) => [
-      // ...prev untuk menambahkan data baru ke dalam array
       ...prev,
-      // data baru yang akan ditambahkan
       {
-        id_menu: "",
-        nama_menu: "",
-        harga: "",
-        jumlah: 0,
-        total_harga: 0,
+        id_menu: newMenu.id_menu,
+        nama_menu: newMenu.nama_menu,
+        harga: newMenu.harga,
+        jumlah: 1,
+        total_harga: newMenu.harga,
       },
     ]);
   };
 
   // fungsi untuk menghapus baris pada tabel menu
   const handleDeleteRow = (index) => {
-    // hapus data pada state kolomMenu berdasarkan index
     setKolomMenu((prev) => prev.filter((_, idx) => idx !== index));
   };
 
   // ambil data menu ketika komponen pertama kali di render
   useEffect(() => {
-    // ambil data user dari local storage
     if (user) {
       if (user.role !== "kasir") {
         navigate("/login");
@@ -195,205 +169,264 @@ export default function index() {
     getDataMenu(); // memanggil fungsi getDataMenu
   }, []);
 
+  // Fungsi untuk menghitung total harga
+  const getTotalHarga = () => {
+    return kolomMenu.reduce((total, item) => total + item.total_harga, 0);
+  };
+
   return (
     <Container>
       <Box
-        textAlign={{ base: "center", md: "left" }} // Pusatkan teks pada layar kecil dan sedang
-        pt={{ base: "100", md: "12" }} // Padding top lebih besar di layar sedang
+        textAlign={{ base: "center", md: "left" }}
+        pt={{ base: "20", md: "1" }} // Mengurangi padding top pada layar kecil
       >
         <Stack direction='row' spacing={4}>
           <Text
             cursor={"pointer"}
             onClick={() => navigate("/dashboard/kasir/transaksi")}
             mb={4}
-          >{`<-- Kembali Ke Transaksi`}</Text>
+            fontSize={{ base: "sm", md: "md" }} // Ubah ukuran teks berdasarkan ukuran layar
+          >
+            {`<-- Kembali Ke Transaksi`}
+          </Text>
         </Stack>
-        <Heading text="Tambah Transaksi Baru" /> {/* memanggil komponen heading */}
-        <Button rightIcon={<MdPayment />} bg={"blue.600"} color={"white"} mt={3}
-          // panggil fungsi handleSubmit dan submitHandlerTransaksi saat tombol tambah diklik
-          onClick={kolomMenu.length > 0 ? handleSubmit(async (values) => {
-            await submitHandlerTransaksi(values);
-          }) : null}
-          isLoading={loading}>
+
+        <Heading text="Tambah Transaksi Baru" />
+
+        <Button
+          rightIcon={<MdPayment />}
+          bg={"blue.600"}
+          color={"white"}
+          mt={3}
+          mb={4}
+          onClick={kolomMenu.length > 0 ? handleSubmit(async (values) => await submitHandlerTransaksi(values)) : null}
+          isLoading={loading}
+          size={{ base: "sm", md: "md" }} // Ubah ukuran button
+        >
           Simpan Transaksi
         </Button>
-        <br></br>
-        {/* menampilkan alert notifikasi */}
+
         <AlertNotification status={status} message={message} />
-        <Grid
-          templateColumns={{ md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
-          gap={10}
-          my={6}
+
+        <Box
+          bg="white"
+          p={{ base: 3, md: 4 }} // Kurangi padding di layar kecil
+          rounded="lg"
+          shadow="md"
+          border="1px"
+          borderColor={borderColor}
+          mb={6}
         >
-          <GridItem>
-            <Flex direction="column">
-              <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold" >
-                Nomor Meja
-              </Text>
-              <Select
-                name="id_meja"
-                id="id_meja"
-                borderRadius="lg"
-                focusBorderColor="blue.700"
-                placeholder="Nomor Meja"
-                {...register("id_meja", {
-                  required: true,
-                })}
-              >
-                {dataMeja.map((item, index) => (
-                  <option key={index} value={item.id_meja}>
-                    {item.nomor_meja}
-                  </option>
-                ))}
-              </Select>
-              {errors.id_meja?.type === "required" && (
-                <FormHelperText textColor="red" mb={4}>
-                  Masukkan Nomor Meja
-                </FormHelperText>
-              )}
-            </Flex>
-          </GridItem>
-
-          <GridItem>
-            <Flex direction="column">
-              <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold" >
-                Nama Pelanggan
-              </Text>
-              <Input
-                name="nama_pelanggan"
-                id="nama_pelanggan"
-                borderRadius="lg"
-                focusBorderColor="blue.700"
-                placeholder="Nama Pelanggan"
-                {...register("nama_pelanggan", {
-                  required: true,
-                })}
-                sx={{
-                  '::placeholder': {
-                    color: 'black',  // Mengubah warna placeholder
-                  },
-                }}
-              />
-
-              {errors.nama_pelanggan?.type === "required" && (
-                <FormHelperText textColor="red" mb={4}>
-                  Masukkan Nama Pelanggan
-                </FormHelperText>
-              )}
-            </Flex>
-          </GridItem>
-
-          {/* Status Pembayaran, disembunyikan */}
-          <Input
-            type="hidden" // Menggunakan type="hidden" untuk menyembunyikan input
-            name="status"
-            id="status"
-            value="Belum Bayar"
-            {...register("status", {
-              required: true,
-            })}
-          />
-        </Grid>
-
-        <Heading text="Detail Pesanan" /> {/* memanggil komponen heading */}
-        <Flex flexDir={"column"}>
-          <Button
-            bg={"green.600"}
-            rightIcon={<IoMdAddCircleOutline size={18} />}
-            color={"white"}
-            size={"md"}
-            mt={6}
-            w={{ md: "40%", lg: "30%", xl: "16%" }}
-            onClick={() => {
-              handleAddRow();
-            }}
+          <Grid
+            templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} // Grid berubah menjadi 1 kolom di layar kecil
+            gap={10}
+            my={6}
           >
-            Tambah Menu
-          </Button>
-          {kolomMenu.map((row, indexRow) => (
-            <Flex
-              w={"full"}
-              gap={10}
-              my={6}
-              alignItems={"flex-end"}
-              key={indexRow}
-            >
+            <GridItem>
               <Flex direction="column">
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
-                  Menu
+                <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
+                  Nomor Meja
                 </Text>
                 <Select
-                  onChange={(e) => {
-                    handleChange(e, indexRow, "menu");
-                  }}
-                  value={row.nama_menu}
-                  placeholder="Choose Menu"
+                  name="id_meja"
+                  id="id_meja"
+                  borderRadius="lg"
+                  focusBorderColor="blue.700"
+                  placeholder="Nomor Meja"
+                  {...register("id_meja", { required: true })}
                 >
-                  {menu.map((item) => (
-                    <option value={item.nama_menu}>{item.nama_menu}</option>
+                  {dataMeja.map((item, index) => (
+                    <option key={index} value={item.id_meja}>
+                      {item.nomor_meja}
+                    </option>
                   ))}
                 </Select>
+                {errors.id_meja?.type === "required" && (
+                  <FormHelperText textColor="red" mb={4}>
+                    Masukkan Nomor Meja
+                  </FormHelperText>
+                )}
               </Flex>
+            </GridItem>
+
+            <GridItem>
               <Flex direction="column">
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
-                  Harga
+                <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
+                  Nama Pelanggan
                 </Text>
-                <Input readOnly value={convertToRupiah(row.harga)} />
+                <Input
+                  name="nama_pelanggan"
+                  id="nama_pelanggan"
+                  borderRadius="lg"
+                  focusBorderColor="blue.700"
+                  placeholder="Nama Pelanggan"
+                  {...register("nama_pelanggan", { required: true })}
+                  sx={{
+                    '::placeholder': {
+                      color: 'black',
+                    },
+                  }}
+                />
+                {errors.nama_pelanggan?.type === "required" && (
+                  <FormHelperText textColor="red" mb={4}>
+                    Masukkan Nama Pelanggan
+                  </FormHelperText>
+                )}
               </Flex>
-              <Flex direction="column">
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
-                  Jumlah
-                </Text>
-                <Flex alignItems={"center"} gap={3}>
-                  <Button
-                    bg={"green.600"}
-                    color={"white"}
-                    size={"md"}
-                    onClick={() => {
-                      handleChange(row.jumlah - 1, indexRow, "jumlah");
-                    }}
-                  >
-                    -
-                  </Button>
-                  <Text fontSize={"xl"} fontWeight={"semibold"}>
-                    {row.jumlah}
-                  </Text>
-                  <Button
-                    bg={"green.600"}
-                    color={"white"}
-                    size={"md"}
-                    onClick={() => {
-                      handleChange(row.jumlah + 1, indexRow, "jumlah");
-                    }}
-                  >
-                    +
-                  </Button>
-                </Flex>
-              </Flex>
-              <Flex direction="column">
-                <Text fontSize={"sm"} fontFamily={"Poppins"}>
-                  Total Harga
-                </Text>
-                <Input readOnly value={convertToRupiah(row.total_harga)} />
-              </Flex>
-              <Button
-                colorScheme={"red"}
-                size={"md"}
-                onClick={() => {
-                  handleDeleteRow(indexRow);
-                }}
+            </GridItem>
+
+            <Input
+              type="hidden"
+              name="status"
+              id="status"
+              value="Belum Bayar"
+              {...register("status", { required: true })}
+            />
+          </Grid>
+        </Box>
+
+        <Heading text="Pilih Menu" />
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={10} my={6}>
+          {menu.map((item) => {
+            const existingItemIndex = kolomMenu.findIndex(
+              (menuItem) => menuItem.id_menu === item.id_menu
+            );
+            const existingItem = kolomMenu[existingItemIndex];
+            return (
+              <Box
+                key={item.id_menu}
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                p={4}
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                bgColor={"white"}
               >
-                <FaTrashAlt />
-              </Button>
-            </Flex>
-          ))}
-          {/* jika kolom menu lebih dari 0, maka tampilkan total harga */}
+                <Image
+                  src={`${BASE_API_IMAGE}/${item.gambar}`}
+                  alt="foto makanan"
+                  h={{ base: 24, md: 32 }} // Mengubah tinggi gambar
+                  w={{ base: "full", md: 52 }} // Mengubah lebar gambar
+                  objectFit="cover"
+                  objectPosition="center"
+                  borderRadius={10}
+                  mb={2}
+                />
+                <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>{item.nama_menu}</Text>
+                <Text fontSize={{ base: "sm", md: "md" }}>{item.deskripsi}</Text>
+                <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>Harga: {convertToRupiah(item.harga)}</Text>
+
+                {/* Jika item sudah ada di kolomMenu, tampilkan tombol +/- */}
+                {existingItem ? (
+                  <Flex alignItems="center" gap={3} mt={4}>
+                    <Button
+                      bg={"green.600#"}
+                      color={"white"}
+                      size={"md"}
+                      onClick={() => {
+                        handleChange(
+                          { target: { value: existingItem.jumlah - 1 } },
+                          existingItemIndex,
+                          "jumlah"
+                        );
+                      }}
+                      isDisabled={existingItem.jumlah === 1}
+                    >
+                      -
+                    </Button>
+                    <Text fontSize={"xl"} fontWeight={"semibold"}>
+                      {existingItem.jumlah}
+                    </Text>
+                    <Button
+                      bg={"green.600"}
+                      color={"white"}
+                      size={"md"}
+                      onClick={() => {
+                        handleChange(
+                          { target: { value: existingItem.jumlah + 1 } },
+                          existingItemIndex,
+                          "jumlah"
+                        );
+                      }}
+                    >
+                      +
+                    </Button>
+                  </Flex>
+                ) : (
+                  <Button
+                    mt={4}
+                    bg="#536493" 
+                    color="white" 
+                    onClick={() => handleAddRow(item)}
+                    alignSelf="center"
+                    size={{ base: "sm", md: "md" }}
+                    _hover={{ bg: "#3f4e73" }}
+                  >
+                    Tambah Menu
+                  </Button>
+
+                )}
+              </Box>
+            );
+          })}
+        </SimpleGrid>
+
+        {/* Box untuk Detail Pemesanan */}
+        <Box
+          bg="white"
+          p={4}
+          rounded="lg"
+          shadow="md"
+          border="1px"
+          borderColor={"blue.50"}
+        >
+          <Heading text="Detail Pesanan" my={4} fontSize={{ base: "md", md: "lg" }} />
+          <Table variant="simple" size={{ base: "sm", md: "lg" }} my={4}>
+            <Thead>
+              <Tr>
+                <Th>Nama Menu</Th>
+                <Th>Harga</Th>
+                <Th>Jumlah</Th>
+                <Th>Total</Th>
+                <Th> </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {kolomMenu.map((row, indexRow) => (
+                <Tr key={indexRow}>
+                  <Td>{row.nama_menu}</Td>
+                  <Td>{convertToRupiah(row.harga)}</Td>
+                  <Td>x{row.jumlah}</Td>
+                  <Td>{convertToRupiah(row.total_harga)}</Td>
+                  <Button
+                    colorScheme={"red"}
+                    size={"md"}
+                    onClick={() => {
+                      handleDeleteRow(indexRow);
+                    }}
+                  >
+                    <FaTrashAlt />
+                  </Button>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+
+          <Divider borderColor="black" my={2} h="1px" />
+
           {kolomMenu.length > 0 && (
-            <b><Text fontSize={"md"} mb={2} fontFamily={"Poppins"} color={"#000000"}>
-              Total Harga {convertToRupiah(kolomMenu.reduce((total, item) => { return total + item.total_harga; }, 0))}
-            </Text></b>
+            <Flex justifyContent="space-between" alignItems="center" mb={2} ml={{ base: "30px", md: "10" }} mr={"185px"}>
+              <Text fontSize={{ base: "sm", md: "md" }} fontFamily="Poppins" fontWeight="bold">
+                Total Harga
+              </Text>
+              <Text fontSize={{ base: "sm", md: "md" }} fontFamily="Poppins" fontWeight="bold">
+                {convertToRupiah(getTotalHarga())}
+              </Text>
+            </Flex>
           )}
-        </Flex>
+        </Box>
       </Box>
     </Container>
   );

@@ -7,7 +7,7 @@ import { FaPlusCircle } from "react-icons/fa";
 export default function ButtonAdd({ heading, onclick }) {
   return (
     <Button
-      bg={"#0C359E"}  // Warna background tombol
+      bg={"#0c359e"}  // Warna background tombol
       color="white"  // Warna teks tombol
       size={{ base: "sm", md: "md" }}
       px={"10"}
