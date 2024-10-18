@@ -1,5 +1,4 @@
-// import library yang dibutuhkan
-import React from "react";
+import React, { useState } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -7,6 +6,7 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
+import WelcomeScreen from "../src/WelcomeScreen"; // Impor WelcomeScreen
 import PublicRoutes from "./utils/routes/PublicRoutes";
 import ProtectedRoutes from "./utils/routes/ProtectedRoutes";
 import Layout from "./components/layout/Layout";
@@ -89,6 +89,20 @@ const router = createBrowserRouter(
 
 // buat komponen utama
 export default function App() {
-  /* berikan router ke provider */
-  return <RouterProvider router={router} />;
+  const [isWelcomeComplete, setIsWelcomeComplete] = useState(false);
+
+  // Callback untuk menghilangkan welcome screen setelah animasi selesai
+  const handleWelcomeComplete = () => {
+    setIsWelcomeComplete(true);
+  };
+
+  return (
+    <>
+      {!isWelcomeComplete ? (
+        <WelcomeScreen onAnimationComplete={handleWelcomeComplete} />
+      ) : (
+        <RouterProvider router={router} />
+      )}
+    </>
+  );
 }
