@@ -62,13 +62,13 @@ export default function Index() {
         gap={5}
         w={"full"}
         pt={{ base: "100", md: "12" }} // Padding top lebih besar di layar sedang
-        mt={{md: "12" }} // Margin top lebih besar di layar sedang
+        mt={{ md: "12" }} // Margin top lebih besar di layar sedang
       >
         {/* Heading Dashboard */}
-         <HeadingDashboard text="Selamat Datang di Dashboard Manajer" />
-         <Text fontWeight={500} fontSize={"xl"}>
-           Saat ini anda login sebagai : {user?.nama_user}
-          </Text>
+        <HeadingDashboard text="Selamat Datang di Dashboard Manajer" />
+        <Text fontWeight={500} fontSize={"xl"}>
+          Saat ini anda login sebagai : {user?.nama_user}
+        </Text>
 
         {/* SimpleGrid untuk menampilkan data summary */}
         <SimpleGrid
@@ -78,67 +78,49 @@ export default function Index() {
           w={"full"}
           px={{ base: 4, md: 8 }} // Padding horizontal yang berbeda untuk layar kecil dan sedang
         >
-          {/* Box untuk menampung card */}
-          <Box
-            p={5}
-            borderWidth="1px"
-            borderRadius="lg"
-            bg={useColorModeValue("gray.50", "gray.800")}
-            boxShadow="md"
+          {/* Card untuk jumlah user */}
+          <Card
+            bg={"#0C359E"}
+            borderRadius="xl" // custom border radius
+            boxShadow="2xl" // lebih besar shadow
+            _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
+            transition="0.4s"
+            aspectRatio={1} // membuat card berbentuk persegi
           >
-            {/* Card untuk jumlah user */}
-            <Card
-              bg={"#0C359E"}
-              borderRadius="xl" // custom border radius
-              boxShadow="2xl" // lebih besar shadow
-              _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
-              transition="0.4s"
-              aspectRatio={1} // membuat card berbentuk persegi
-            >
-              <CardHeader display="flex" alignItems="center" justifyContent="center">
-                <Box as={FaMoneyCheck} size="30px" color="white" _hover={{ transition: "0.5s" }} />
-                <Heading size="md" mt="5px" color="white" ml={3}>
-                  Transaksi Bulan {bulanIni}
-                </Heading>
-              </CardHeader>
-              <CardBody>
-                <Text fontSize="30px" fontWeight="bold" color="white">
-                  {transaksi}
-                </Text>
-              </CardBody>
-            </Card>
-          </Box>
+            <CardHeader display="flex" alignItems="center" justifyContent="center">
+              <Box as={FaMoneyCheck} size="30px" color="white" _hover={{ transition: "0.5s" }} />
+              <Heading size="md" mt="5px" color="white" ml={3}>
+                Transaksi Bulan {bulanIni}
+              </Heading>
+            </CardHeader>
+            <CardBody>
+              <Text fontSize="30px" fontWeight="bold" color="white">
+                {transaksi}
+              </Text>
+            </CardBody>
+          </Card>
 
-          {/* Box untuk card jumlah meja */}
-          <Box
-            p={5}
-            borderWidth="1px"
-            borderRadius="lg"
-            bg={useColorModeValue("gray.50", "gray.800")}
-            boxShadow="md"
+          {/* Card untuk jumlah meja */}
+          <Card
+            bg={"#0C359E"}
+            borderRadius="xl"
+            boxShadow="2xl"
+            _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
+            transition="0.4s"
+            aspectRatio={1}
           >
-            {/* Card untuk jumlah meja */}
-            <Card
-              bg={"#0C359E"}
-              borderRadius="xl"
-              boxShadow="2xl"
-              _hover={{ transform: "scale(1.08)", transition: "0.4s", boxShadow: "3xl" }} // hover effect lebih halus
-              transition="0.4s"
-              aspectRatio={1}
-            >
-              <CardHeader display="flex" alignItems="center" justifyContent="center">
-                <Box as={FaMoneyCheckAlt} size="30px" color="white" _hover={{ transition: "0.5s" }} />
-                <Heading size="md" mt="5px" color="white" ml={3}>
-                  Pemasukan Bulan {bulanIni}
-                </Heading>
-              </CardHeader>
-              <CardBody>
-                <Text fontSize="30px" fontWeight="bold" color="white">
-                  {convertToRupiah(pemasukan)}
-                </Text>
-              </CardBody>
-            </Card>
-          </Box>
+            <CardHeader display="flex" alignItems="center" justifyContent="center">
+              <Box as={FaMoneyCheckAlt} size="30px" color="white" _hover={{ transition: "0.5s" }} />
+              <Heading size="md" mt="5px" color="white" ml={3}>
+                Pemasukan Bulan {bulanIni}
+              </Heading>
+            </CardHeader>
+            <CardBody>
+              <Text fontSize="30px" fontWeight="bold" color="white">
+                {convertToRupiah(pemasukan)}
+              </Text>
+            </CardBody>
+          </Card>
         </SimpleGrid>
       </Box>
     </Container>

@@ -66,11 +66,12 @@ export default function Index() {
         pt={{ base: "100", md: "12" }} // Padding top lebih besar di layar sedang
         mt={{ md: "12" }} // Margin top lebih besar di layar sedang
       >
-        {/* Heading Dashboard */}
-        <HeadingDashboard text="Selamat Datang di Dashboard Admin" />
-        <Text fontWeight={500} fontSize={"xl"}>
-          Saat ini anda login sebagai : {user?.nama_user}
-        </Text>
+        
+          {/* Heading Dashboard */}
+          <HeadingDashboard text="Selamat Datang di Dashboard Admin" />
+          <Text fontWeight={500} fontSize={"xl"}>
+            Saat ini anda login sebagai : {user?.nama_user}
+          </Text>
 
         {/* SimpleGrid untuk menampilkan data summary */}
         <SimpleGrid

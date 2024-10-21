@@ -22,6 +22,15 @@ import {
   Td,
   Tbody,
   Divider,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  FormControl,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -29,7 +38,8 @@ import Heading from "../../../components/text/Heading";
 import Container from "../../../components/container/Container";
 import { getAllMenu, addDetailTransaksi } from "./fragments/ApiHandler";
 import { MdPayment } from "react-icons/md";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt, FaGlassCheers } from "react-icons/fa";
+import { MdDining, MdDinnerDining } from "react-icons/md";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { addTransaksi, updateStatusMeja, getMejaByStatus } from "../transaksi/fragments/ApiHandler";
 import AlertNotification from "../../../components/alert";
@@ -42,6 +52,7 @@ import { BASE_API_IMAGE } from "../../../../src/utils/constants";
 export default function index() {
   // deklarasi variabel
   const navigate = useNavigate(); // untuk navigasi halaman
+  const { isOpen, onOpen, onClose } = useDisclosure(); // for modal handling
   const user = getLocalStorage(LOCAL_STORAGE_USER); // ambil data user dari local storage
   const {
     register,
@@ -73,6 +84,12 @@ export default function index() {
 
   // fungsi untuk handle submit transaksi
   const submitHandlerTransaksi = async (values) => {
+    if (!values.id_meja || !values.nama_pelanggan) {
+      setMessage("Nomor Meja dan Nama Pelanggan harus diisi");
+      setStatus("error");
+      return;
+    }
+
     setLoading(true);
     const value = {
       ...values,
@@ -111,6 +128,7 @@ export default function index() {
       }, 1000);
     }
   };
+
 
   // fungsi untuk mengubah data pada state kolomMenu
   const handleChange = (e, indexRow, type) => {
@@ -199,17 +217,147 @@ export default function index() {
           color={"white"}
           mt={3}
           mb={4}
-          onClick={kolomMenu.length > 0 ? handleSubmit(async (values) => await submitHandlerTransaksi(values)) : null}
+          onClick={onOpen} // Open modal on button click
           isLoading={loading}
-          size={{ base: "sm", md: "md" }} // Ubah ukuran button
+          size={{ base: "sm", md: "md" }}
+          isDisabled={kolomMenu.length === 0} // Disable button if no menu selected
+          _hover={{ bg: "blue.700" }}
         >
           Simpan Transaksi
         </Button>
 
+
         <AlertNotification status={status} message={message} />
 
+        {/* Modal for form and detail pesanan */}
+        <Modal isOpen={isOpen} onClose={onClose} size="6xl">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Detail Pesanan</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Grid
+                templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+                gap={10}
+                my={6}
+              >
+                {/* Form untuk input data transaksi */}
+                <GridItem>
+                  <FormControl isInvalid={errors.id_meja}>
+                    <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
+                      Nomor Meja
+                    </Text>
+                    <Select
+                      name="id_meja"
+                      id="id_meja"
+                      borderRadius="lg"
+                      focusBorderColor="blue.700"
+                      placeholder="Nomor Meja"
+                      {...register("id_meja", { required: true })}
+                    >
+                      {dataMeja.map((item, index) => (
+                        <option key={index} value={item.id_meja}>
+                          {item.nomor_meja}
+                        </option>
+                      ))}
+                    </Select>
+                    {errors.id_meja && (
+                      <FormHelperText textColor="red" mb={4}>
+                        Masukkan Nomor Meja
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </GridItem>
+
+                <GridItem>
+                  <FormControl isInvalid={errors.nama_pelanggan}>
+                    <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
+                      Nama Pelanggan
+                    </Text>
+                    <Input
+                      name="nama_pelanggan"
+                      id="nama_pelanggan"
+                      borderRadius="lg"
+                      focusBorderColor="blue.700"
+                      placeholder="Nama Pelanggan"
+                      {...register("nama_pelanggan", { required: true })}
+                    />
+                    {errors.nama_pelanggan && (
+                      <FormHelperText textColor="red" mb={4}>
+                        Masukkan Nama Pelanggan
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </GridItem>
+
+                <Input
+                  type="hidden"
+                  name="status"
+                  id="status"
+                  value="Belum Bayar"
+                  {...register("status", { required: true })}
+                />
+              </Grid>
+
+              <Divider borderColor="black" my={4} />
+
+              {/* Box untuk Detail Pemesanan */}
+              <Box bg="white" p={4} rounded="lg" shadow="md" border="1px" borderColor={"blue.50"}>
+                <Heading text="Detail Pesanan" my={4} fontSize={{ base: "md", md: "lg" }} />
+                <Table variant="simple" size={{ base: "sm", md: "lg" }} my={4}>
+                  <Thead>
+                    <Tr>
+                      <Th>Nama Menu</Th>
+                      <Th>Harga</Th>
+                      <Th>Jumlah</Th>
+                      <Th>Total Harga</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {kolomMenu.map((row, indexRow) => (
+                      <Tr key={indexRow}>
+                        <Td>{row.nama_menu}</Td>
+                        <Td>{convertToRupiah(row.harga)}</Td>
+                        <Td>x{row.jumlah}</Td>
+                        <Td>{convertToRupiah(row.total_harga)}</Td>
+                        <td>
+                          <Button
+                            mr={20}
+                            mt={3}
+                            colorScheme={"red"}
+                            size={"md"}
+                            onClick={() => {
+                              handleDeleteRow(indexRow);
+                            }}
+                          >
+                            <FaTrashAlt />
+                          </Button>
+                        </td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+
+                <Flex justifyContent="space-between" fontWeight="bold" mr={340} ml={8} my={5}>
+                  <Text>Total Harga :</Text>
+                  <Text>{convertToRupiah(getTotalHarga())}</Text>
+                </Flex>
+              </Box>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} onClick={handleSubmit(submitHandlerTransaksi)}>
+                Simpan
+              </Button>
+              <Button variant="ghost" onClick={onClose}>
+                Batal
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
         <Box
-          bg="white"
+          bg="transparent"
           p={{ base: 3, md: 4 }} // Kurangi padding di layar kecil
           rounded="lg"
           shadow="md"
@@ -217,216 +365,201 @@ export default function index() {
           borderColor={borderColor}
           mb={6}
         >
-          <Grid
-            templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} // Grid berubah menjadi 1 kolom di layar kecil
-            gap={10}
-            my={6}
-          >
-            <GridItem>
-              <Flex direction="column">
-                <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
-                  Nomor Meja
-                </Text>
-                <Select
-                  name="id_meja"
-                  id="id_meja"
-                  borderRadius="lg"
-                  focusBorderColor="blue.700"
-                  placeholder="Nomor Meja"
-                  {...register("id_meja", { required: true })}
-                >
-                  {dataMeja.map((item, index) => (
-                    <option key={index} value={item.id_meja}>
-                      {item.nomor_meja}
-                    </option>
-                  ))}
-                </Select>
-                {errors.id_meja?.type === "required" && (
-                  <FormHelperText textColor="red" mb={4}>
-                    Masukkan Nomor Meja
-                  </FormHelperText>
-                )}
-              </Flex>
-            </GridItem>
-
-            <GridItem>
-              <Flex direction="column">
-                <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
-                  Nama Pelanggan
-                </Text>
-                <Input
-                  name="nama_pelanggan"
-                  id="nama_pelanggan"
-                  borderRadius="lg"
-                  focusBorderColor="blue.700"
-                  placeholder="Nama Pelanggan"
-                  {...register("nama_pelanggan", { required: true })}
-                  sx={{
-                    '::placeholder': {
-                      color: 'black',
-                    },
-                  }}
-                />
-                {errors.nama_pelanggan?.type === "required" && (
-                  <FormHelperText textColor="red" mb={4}>
-                    Masukkan Nama Pelanggan
-                  </FormHelperText>
-                )}
-              </Flex>
-            </GridItem>
-
-            <Input
-              type="hidden"
-              name="status"
-              id="status"
-              value="Belum Bayar"
-              {...register("status", { required: true })}
-            />
-          </Grid>
         </Box>
 
-        <Heading text="Pilih Menu" />
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={10} my={6}>
-          {menu.map((item) => {
-            const existingItemIndex = kolomMenu.findIndex(
-              (menuItem) => menuItem.id_menu === item.id_menu
-            );
-            const existingItem = kolomMenu[existingItemIndex];
-            return (
-              <Box
-                key={item.id_menu}
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="hidden"
-                p={4}
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                bgColor={"white"}
-              >
-                <Image
-                  src={`${BASE_API_IMAGE}/${item.gambar}`}
-                  alt="foto makanan"
-                  h={{ base: 24, md: 32 }} // Mengubah tinggi gambar
-                  w={{ base: "full", md: 52 }} // Mengubah lebar gambar
-                  objectFit="cover"
-                  objectPosition="center"
-                  borderRadius={10}
-                  mb={2}
-                />
-                <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>{item.nama_menu}</Text>
-                <Text fontSize={{ base: "sm", md: "md" }}>{item.deskripsi}</Text>
-                <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>Harga: {convertToRupiah(item.harga)}</Text>
-
-                {/* Jika item sudah ada di kolomMenu, tampilkan tombol +/- */}
-                {existingItem ? (
-                  <Flex alignItems="center" gap={3} mt={4}>
-                    <Button
-                      bg={"green.600#"}
-                      color={"white"}
-                      size={"md"}
-                      onClick={() => {
-                        handleChange(
-                          { target: { value: existingItem.jumlah - 1 } },
-                          existingItemIndex,
-                          "jumlah"
-                        );
-                      }}
-                      isDisabled={existingItem.jumlah === 1}
-                    >
-                      -
-                    </Button>
-                    <Text fontSize={"xl"} fontWeight={"semibold"}>
-                      {existingItem.jumlah}
-                    </Text>
-                    <Button
-                      bg={"green.600"}
-                      color={"white"}
-                      size={"md"}
-                      onClick={() => {
-                        handleChange(
-                          { target: { value: existingItem.jumlah + 1 } },
-                          existingItemIndex,
-                          "jumlah"
-                        );
-                      }}
-                    >
-                      +
-                    </Button>
-                  </Flex>
-                ) : (
-                  <Button
-                    mt={4}
-                    bg="#536493" 
-                    color="white" 
-                    onClick={() => handleAddRow(item)}
-                    alignSelf="center"
-                    size={{ base: "sm", md: "md" }}
-                    _hover={{ bg: "#3f4e73" }}
-                  >
-                    Tambah Menu
-                  </Button>
-
-                )}
-              </Box>
-            );
-          })}
-        </SimpleGrid>
-
-        {/* Box untuk Detail Pemesanan */}
+        {/* Bagian Minuman */}
         <Box
           bg="white"
-          p={4}
+          p={6}
           rounded="lg"
           shadow="md"
-          border="1px"
-          borderColor={"blue.50"}
+          display="inline-block"
         >
-          <Heading text="Detail Pesanan" my={4} fontSize={{ base: "md", md: "lg" }} />
-          <Table variant="simple" size={{ base: "sm", md: "lg" }} my={4}>
-            <Thead>
-              <Tr>
-                <Th>Nama Menu</Th>
-                <Th>Harga</Th>
-                <Th>Jumlah</Th>
-                <Th>Total</Th>
-                <Th> </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {kolomMenu.map((row, indexRow) => (
-                <Tr key={indexRow}>
-                  <Td>{row.nama_menu}</Td>
-                  <Td>{convertToRupiah(row.harga)}</Td>
-                  <Td>x{row.jumlah}</Td>
-                  <Td>{convertToRupiah(row.total_harga)}</Td>
-                  <Button
-                    colorScheme={"red"}
-                    size={"md"}
-                    onClick={() => {
-                      handleDeleteRow(indexRow);
-                    }}
-                  >
-                    <FaTrashAlt />
-                  </Button>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-
-          <Divider borderColor="black" my={2} h="1px" />
-
-          {kolomMenu.length > 0 && (
-            <Flex justifyContent="space-between" alignItems="center" mb={2} ml={{ base: "30px", md: "10" }} mr={"185px"}>
-              <Text fontSize={{ base: "sm", md: "md" }} fontFamily="Poppins" fontWeight="bold">
-                Total Harga
-              </Text>
-              <Text fontSize={{ base: "sm", md: "md" }} fontFamily="Poppins" fontWeight="bold">
-                {convertToRupiah(getTotalHarga())}
-              </Text>
-            </Flex>
-          )}
+          <Heading text="Minuman" />
         </Box>
+        <SimpleGrid columns={{ base: 2, sm: 2, md: 5 }} spacing={5} my={6}>
+          {menu
+            .filter((item) => item.jenis === "minuman") // Filter untuk minuman
+            .map((item) => {
+              const existingItemIndex = kolomMenu.findIndex(
+                (menuItem) => menuItem.id_menu === item.id_menu
+              );
+              const existingItem = kolomMenu[existingItemIndex];
+              return (
+                <Box
+                  key={item.id_menu}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  p={4}
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  bgColor={"white"}
+                >
+                  <Image
+                    src={`${BASE_API_IMAGE}/${item.gambar}`}
+                    alt="foto minuman"
+                    h={{ base: 24, md: 32 }}
+                    w={{ base: "full", md: 52 }}
+                    objectFit="cover"
+                    objectPosition="center"
+                    borderRadius={10}
+                    mb={2}
+                  />
+                  <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>{item.nama_menu}</Text>
+                  <Text fontSize={{ base: "sm", md: "md" }}>{item.deskripsi}</Text>
+                  <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>Harga: {convertToRupiah(item.harga)}</Text>
+
+                  {existingItem ? (
+                    <Flex alignItems="center" gap={3} mt={4}>
+                      <Button
+                        bg={"red.600"}
+                        color={"white"}
+                        size={"md"}
+                        onClick={() => {
+                          handleChange(
+                            { target: { value: existingItem.jumlah - 1 } },
+                            existingItemIndex,
+                            "jumlah"
+                          );
+                        }}
+                        isDisabled={existingItem.jumlah === 1}
+                      >
+                        -
+                      </Button>
+                      <Text fontSize={"xl"} fontWeight={"semibold"}>
+                        {existingItem.jumlah}
+                      </Text>
+                      <Button
+                        bg={"green.600"}
+                        color={"white"}
+                        size={"md"}
+                        onClick={() => {
+                          handleChange(
+                            { target: { value: existingItem.jumlah + 1 } },
+                            existingItemIndex,
+                            "jumlah"
+                          );
+                        }}
+                      >
+                        +
+                      </Button>
+                    </Flex>
+                  ) : (
+                    <Button
+                      mt={4}
+                      bg="#536493"
+                      color="white"
+                      onClick={() => handleAddRow(item)}
+                      alignSelf="center"
+                      size={{ base: "sm", md: "md" }}
+                      _hover={{ bg: "#3f4e73" }}
+                    >
+                      Tambah Menu
+                    </Button>
+                  )}
+                </Box>
+              );
+            })}
+        </SimpleGrid>
+
+        {/* Bagian Makanan */}
+        <Box
+          bg="white"
+          p={6}
+          rounded="lg"
+          shadow="md"
+          display="inline-block"
+        >
+          <Heading text="Makanan" />
+        </Box>
+        <SimpleGrid columns={{ base: 2, sm: 2, md: 5 }} spacing={5} my={6}>
+          {menu
+            .filter((item) => item.jenis === "makanan") // Filter untuk makanan
+            .map((item) => {
+              const existingItemIndex = kolomMenu.findIndex(
+                (menuItem) => menuItem.id_menu === item.id_menu
+              );
+              const existingItem = kolomMenu[existingItemIndex];
+              return (
+                <Box
+                  key={item.id_menu}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  p={4}
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  bgColor={"white"}
+                >
+                  <Image
+                    src={`${BASE_API_IMAGE}/${item.gambar}`}
+                    alt="foto makanan"
+                    h={{ base: 24, md: 32 }}
+                    w={{ base: "full", md: 52 }}
+                    objectFit="cover"
+                    objectPosition="center"
+                    borderRadius={10}
+                    mb={2}
+                  />
+                  <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>{item.nama_menu}</Text>
+                  <Text fontSize={{ base: "sm", md: "md" }}>{item.deskripsi}</Text>
+                  <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>Harga: {convertToRupiah(item.harga)}</Text>
+
+                  {existingItem ? (
+                    <Flex alignItems="center" gap={3} mt={4}>
+                      <Button
+                        bg={"red.600"}
+                        color={"white"}
+                        size={"md"}
+                        onClick={() => {
+                          handleChange(
+                            { target: { value: existingItem.jumlah - 1 } },
+                            existingItemIndex,
+                            "jumlah"
+                          );
+                        }}
+                        isDisabled={existingItem.jumlah === 1}
+                      >
+                        -
+                      </Button>
+                      <Text fontSize={"xl"} fontWeight={"semibold"}>
+                        {existingItem.jumlah}
+                      </Text>
+                      <Button
+                        bg={"green.600"}
+                        color={"white"}
+                        size={"md"}
+                        onClick={() => {
+                          handleChange(
+                            { target: { value: existingItem.jumlah + 1 } },
+                            existingItemIndex,
+                            "jumlah"
+                          );
+                        }}
+                      >
+                        +
+                      </Button>
+                    </Flex>
+                  ) : (
+                    <Button
+                      mt={4}
+                      bg="#536493"
+                      color="white"
+                      onClick={() => handleAddRow(item)}
+                      alignSelf="center"
+                      size={{ base: "sm", md: "md" }}
+                      _hover={{ bg: "#3f4e73" }}
+                    >
+                      Tambah Menu
+                    </Button>
+                  )}
+                </Box>
+              );
+            })}
+        </SimpleGrid>
       </Box>
     </Container>
   );

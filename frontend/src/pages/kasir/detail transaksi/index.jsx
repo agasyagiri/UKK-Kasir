@@ -263,10 +263,10 @@ export default function index() {
 
           {kolomMenu.length > 0 && (
             <Flex justifyContent="space-between" alignItems="center" mb={2}>
-              <Text fontSize={{ base: "sm", md: "md" }} fontFamily="Poppins" fontWeight="bold">
+              <Text fontSize={{ base: "sm", md: "md" }} ml="29px" fontFamily="Poppins" fontWeight="bold">
                 Total Harga
               </Text>
-              <Text fontSize={{ base: "sm", md: "md" }} fontFamily="Poppins" fontWeight="bold">
+              <Text fontSize={{ base: "sm", md: "md" }}  mr="110px" fontFamily="Poppins" fontWeight="bold">
                 {convertToRupiah(kolomMenu.reduce((total, item) => total + item.harga, 0))}
               </Text>
             </Flex>
