@@ -55,7 +55,7 @@ const columns = [
     width: "35%",
     render: (data) => (
       <Flex justifyContent="center" alignItems="center">
-        <ActionButton payload={data} reload={data?.reload} />
+        <ActionButton payload={data.id_meja} reload={data.reload} />
       </Flex>
     ),
   },

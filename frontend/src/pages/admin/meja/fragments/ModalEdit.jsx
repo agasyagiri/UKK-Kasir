@@ -146,8 +146,8 @@ export default function ModalAdd({ isOpen, onClose, payload, reload }) {
                       required: true,
                     })}
                   >
-                    <option value="kosong">kosong</option>
-                    <option value="terisi">terisi</option>
+                    <option value="Kosong">Kosong</option>
+                    <option value="Terisi">Terisi</option>
                   </Select>
                   {errors.status?.type === "required" && (
                     <FormHelperText textColor="red" mb={4}>

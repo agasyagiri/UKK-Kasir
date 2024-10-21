@@ -57,7 +57,7 @@ export default function ModalDelete({ isOpen, onClose, payload, reload }) {
           <Button
             size={"md"}
             borderRadius="lg"
-            colorScheme={"grey"}
+            colorScheme={"red"}
             fontWeight={500}
             // ketika tombol hapus diklik, panggil fungsi deleteMeja
             onClick={async () => {
