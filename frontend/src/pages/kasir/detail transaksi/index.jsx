@@ -236,6 +236,7 @@ export default function index() {
           shadow="md"
           border="1px"
           borderColor={borderColor}
+          overflowX="auto"
         >
           <Heading text="Detail Pesanan" my={4} fontSize={{ base: "md", md: "lg" }} />
           <Table variant="simple" size={{ base: "sm", md: "lg" }} my={4}>

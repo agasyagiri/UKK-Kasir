@@ -4,16 +4,6 @@ import { convertToRupiah } from "../../../../utils/routes/FormatRupiahs";
 
 const columns = [
   {
-    title: "No",
-    key: "no",
-    width: "8%",
-    render: (text, record,index) => (
-      <span>
-        {index + 1}
-      </span>
-    ),
-  },
-  {
     title: "Nama Pelanggan",
     width: "15%",
     dataIndex: "transaksi",

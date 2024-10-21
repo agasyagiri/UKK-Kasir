@@ -216,7 +216,7 @@ export default function index() {
           bg={"blue.600"}
           color={"white"}
           mt={3}
-          mb={4}
+          mb={5}
           onClick={onOpen} // Open modal on button click
           isLoading={loading}
           size={{ base: "sm", md: "md" }}
@@ -230,21 +230,21 @@ export default function index() {
         <AlertNotification status={status} message={message} />
 
         {/* Modal for form and detail pesanan */}
-        <Modal isOpen={isOpen} onClose={onClose} size="6xl">
+        <Modal isOpen={isOpen} onClose={onClose} size={{ base: "full", md: "6xl" }}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Detail Pesanan</ModalHeader>
+            <ModalHeader fontSize={{ base: "lg", md: "xl" }}>Detail Pesanan</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Grid
                 templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
-                gap={10}
+                gap={6}
                 my={6}
               >
                 {/* Form untuk input data transaksi */}
                 <GridItem>
                   <FormControl isInvalid={errors.id_meja}>
-                    <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
+                    <Text fontSize={{ base: "sm", md: "md" }} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
                       Nomor Meja
                     </Text>
                     <Select
@@ -271,7 +271,7 @@ export default function index() {
 
                 <GridItem>
                   <FormControl isInvalid={errors.nama_pelanggan}>
-                    <Text fontSize={"md"} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
+                    <Text fontSize={{ base: "sm", md: "md" }} fontFamily={"Poppins"} ml={3} mb={1} fontWeight="bold">
                       Nama Pelanggan
                     </Text>
                     <Input
@@ -302,7 +302,15 @@ export default function index() {
               <Divider borderColor="black" my={4} />
 
               {/* Box untuk Detail Pemesanan */}
-              <Box bg="white" p={4} rounded="lg" shadow="md" border="1px" borderColor={"blue.50"}>
+              <Box
+                bg="white"
+                p={{ base: 2, md: 4 }}
+                rounded="lg"
+                shadow="md"
+                border="1px"
+                borderColor={"blue.50"}
+                overflowX="auto"
+              >
                 <Heading text="Detail Pesanan" my={4} fontSize={{ base: "md", md: "lg" }} />
                 <Table variant="simple" size={{ base: "sm", md: "lg" }} my={4}>
                   <Thead>
@@ -311,6 +319,7 @@ export default function index() {
                       <Th>Harga</Th>
                       <Th>Jumlah</Th>
                       <Th>Total Harga</Th>
+                      <Th></Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -320,41 +329,40 @@ export default function index() {
                         <Td>{convertToRupiah(row.harga)}</Td>
                         <Td>x{row.jumlah}</Td>
                         <Td>{convertToRupiah(row.total_harga)}</Td>
-                        <td>
+                        <Td>
                           <Button
-                            mr={20}
-                            mt={3}
+                            size={{ base: "sm", md: "md" }}
                             colorScheme={"red"}
-                            size={"md"}
                             onClick={() => {
                               handleDeleteRow(indexRow);
                             }}
                           >
                             <FaTrashAlt />
                           </Button>
-                        </td>
+                        </Td>
                       </Tr>
                     ))}
                   </Tbody>
                 </Table>
 
-                <Flex justifyContent="space-between" fontWeight="bold" mr={340} ml={8} my={5}>
-                  <Text>Total Harga :</Text>
-                  <Text>{convertToRupiah(getTotalHarga())}</Text>
+                <Flex justifyContent="space-between" fontWeight="bold" my={5} flexDirection={{ base: "column", md: "row" }}>
+                  <Text fontSize={{ base: "sm", md: "md" }} mb={{ base: 2, md: 0 }}>Total Harga :</Text>
+                  <Text fontSize={{ base: "sm", md: "md" }}>{convertToRupiah(getTotalHarga())}</Text>
                 </Flex>
               </Box>
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={handleSubmit(submitHandlerTransaksi)}>
+              <Button size={{ base: "sm", md: "md" }} colorScheme="blue" mr={3} onClick={handleSubmit(submitHandlerTransaksi)}>
                 Simpan
               </Button>
-              <Button variant="ghost" onClick={onClose}>
+              <Button size={{ base: "sm", md: "md" }} colorScheme={"red"} variant="ghost" onClick={onClose}>
                 Batal
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
+
 
         <Box
           bg="transparent"
