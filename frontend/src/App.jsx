@@ -1,3 +1,4 @@
+// index.jsx
 import React, { useState } from "react";
 import {
   createBrowserRouter,
@@ -6,7 +7,7 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import WelcomeScreen from "../src/WelcomeScreen"; // Impor WelcomeScreen
+import WelcomeScreen from "../src/WelcomeScreen";
 import PublicRoutes from "./utils/routes/PublicRoutes";
 import ProtectedRoutes from "./utils/routes/ProtectedRoutes";
 import Layout from "./components/layout/Layout";
@@ -33,52 +34,49 @@ const router = createBrowserRouter(
   // buat rute dari element
   createRoutesFromElements(
     <>
-      {/* rute utama */}
-      <Route path="/" element={<ProtectedRoutes />}>
+      {/* Rute utama yang terlindungi */}
+      <Route path="/" element={<ProtectedRoutes allowedRoles={["admin", "kasir", "manajer"]} />}>
         {/* auto redirect ke halaman login */}
         <Route path="/" element={<Navigate to="/login" />} />
-        {/* rute untuk role admin */}
-        <Route path="/dashboard/admin" element={<Layout />}>
-          {/* rute dashboard */}
-          <Route index element={<AdminDashboard />} />
-          {/* rute user */}
-          <Route path="user" element={<AdminUser />} />
-          {/* rute meja */}
-          <Route path="meja" element={<AdminMeja />} />
-          {/* rute menu */}
-          <Route path="menu" element={<AdminMenu />} />
+
+        {/* Rute untuk role admin */}
+        <Route path="/dashboard/admin" element={<ProtectedRoutes allowedRoles={["admin"]} />}>
+          <Route path="/dashboard/admin" element={<Layout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="user" element={<AdminUser />} />
+            <Route path="meja" element={<AdminMeja />} />
+            <Route path="menu" element={<AdminMenu />} />
+          </Route>
         </Route>
-        {/* rute untuk role kasir */}
-        <Route path="/dashboard/kasir" element={<Layout />}>
-          {/* rute dashboard */}
-          <Route index element={<KasirDashboard />} />
-          {/* rute transaksi */}
-          <Route path="transaksi" element={<KasirTransaksi />} />
-          {/* rute tambah transaksi */}
-          <Route path="tambah-transaksi" element={<KasirTambahTransaksi />} />
-          {/* rute detail transaksi */}
-          <Route path="transaksi/:id" element={<KasirTransaksiDetail />} />
+
+        {/* Rute untuk role kasir */}
+        <Route path="/dashboard/kasir" element={<ProtectedRoutes allowedRoles={["kasir"]} />}>
+          <Route path="/dashboard/kasir" element={<Layout />}>
+            <Route index element={<KasirDashboard />} />
+            <Route path="transaksi" element={<KasirTransaksi />} />
+            <Route path="tambah-transaksi" element={<KasirTambahTransaksi />} />
+            <Route path="transaksi/:id" element={<KasirTransaksiDetail />} />
+          </Route>
         </Route>
-        {/* rute untuk role manajer */}
-        <Route path="/dashboard/manajer" element={<Layout />}>
-          {/* rute dashboard */}
-          <Route index element={<ManajerDashboard />} />
-          {/* rute transaksi */}
-          <Route path="transaksi" element={<ManajerTransaksi />} />
-          {/* rute detail transaksi */}
-          <Route path="transaksi/:id" element={<ManajerTransaksiDetail />} />
-          {/* rute menu */}
-          <Route path="menu" element={<ManajerMenu />} />
-          {/* rute laporan */}
-          <Route path="laporan" element={<ManajerLaporan />} />
+
+        {/* Rute untuk role manajer */}
+        <Route path="/dashboard/manajer" element={<ProtectedRoutes allowedRoles={["manajer"]} />}>
+          <Route path="/dashboard/manajer" element={<Layout />}>
+            <Route index element={<ManajerDashboard />} />
+            <Route path="transaksi" element={<ManajerTransaksi />} />
+            <Route path="transaksi/:id" element={<ManajerTransaksiDetail />} />
+            <Route path="menu" element={<ManajerMenu />} />
+            <Route path="laporan" element={<ManajerLaporan />} />
+          </Route>
         </Route>
       </Route>
-      {/* rute login */}
+
+      {/* Rute login */}
       <Route path="login" element={<PublicRoutes />}>
-        {/* halaman login */}
         <Route index element={<Login />} />
       </Route>
-      {/* rute cetak transaksi */}
+
+      {/* Rute cetak transaksi untuk kasir */}
       <Route
         path="/dashboard/kasir/transaksi/:id/cetak"
         element={<KasirTransaksiDetailCetak />}
@@ -87,7 +85,7 @@ const router = createBrowserRouter(
   )
 );
 
-// buat komponen utama
+// Komponen utama
 export default function App() {
   const [isWelcomeComplete, setIsWelcomeComplete] = useState(false);
 

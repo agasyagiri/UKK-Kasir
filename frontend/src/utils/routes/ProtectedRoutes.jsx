@@ -1,41 +1,48 @@
-// import library yang dibutuhkan
+// ProtectedRoutes.jsx
 import React from "react";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { getLocalStorage } from "../helper/localStorage";
 import { LOCAL_STORAGE_TOKEN, LOCAL_STORAGE_USER } from "../constants";
 import AdminLayout from "../../components/layout/Layout";
 
-// buat komponen ProtectedRoutes
+// Fungsi untuk mengecek autentikasi pengguna dan role
 const userAuth = () => {
-  // ambil token dari local storage
   const token = getLocalStorage(LOCAL_STORAGE_TOKEN);
-  // ambil user dari local storage
   const user = getLocalStorage(LOCAL_STORAGE_USER);
-  // jika token ada maka kembalikan token dan user
+
   if (token) {
     return {
       token: token,
-      user: user.role,
+      role: user.role,
     };
-  }
-  // jika tidak ada maka kembalikan false
-  else {
+  } else {
     return false;
   }
 };
 
-// buat komponen ProtectedRoutes
-const ProtectedRoutes = () => {
-  // ambil token dari fungsi userAuth
-  const { token } = userAuth();
-  // jika token ada maka kembalikan layout admin
-  return token ? (
-    <Outlet render={(props) => <AdminLayout {...props} />} />
-  ) : (
-    // jika tidak ada maka kembalikan ke halaman login
-    <Navigate to="/login" />
-  );
+// Komponen ProtectedRoutes
+const ProtectedRoutes = ({ allowedRoles }) => {
+  const location = useLocation();
+  const { token, role } = userAuth() || {};
+
+  // Jika tidak ada token, redirect ke login
+  if (!token) {
+    return <Navigate to="/login" state={{ from: location }} />;
+  }
+
+  // Jika peran pengguna tidak termasuk dalam allowedRoles, redirect ke dashboard sesuai peran
+  if (allowedRoles && !allowedRoles.includes(role)) {
+    if (role === "admin") {
+      return <Navigate to="/dashboard/admin" />;
+    } else if (role === "kasir") {
+      return <Navigate to="/dashboard/kasir/" />;
+    } else if (role === "manajer") {
+      return <Navigate to="/dashboard/manajer" />;
+    }
+  }
+
+  // Jika peran sesuai, izinkan akses ke halaman
+  return <Outlet />;
 };
 
-// export komponen ProtectedRoutes
 export default ProtectedRoutes;

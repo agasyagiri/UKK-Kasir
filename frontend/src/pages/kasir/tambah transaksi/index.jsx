@@ -346,8 +346,8 @@ export default function index() {
                 </Table>
 
                 <Flex justifyContent="space-between" fontWeight="bold" my={5} flexDirection={{ base: "column", md: "row" }}>
-                  <Text fontSize={{ base: "sm", md: "md" }} mb={{ base: 2, md: 0 }}>Total Harga :</Text>
-                  <Text fontSize={{ base: "sm", md: "md" }}>{convertToRupiah(getTotalHarga())}</Text>
+                  <Text fontSize={{ base: "sm", md: "md" }} ml={"3l0px"} mb={{ base: 2, md: 0 }}>Total Harga :</Text>
+                  <Text fontSize={{ base: "sm", md: "md" }} mr={"330px"}>{convertToRupiah(getTotalHarga())}</Text>
                 </Flex>
               </Box>
             </ModalBody>
