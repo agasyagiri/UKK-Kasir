@@ -209,23 +209,7 @@ export default function index() {
           </Text>
         </Stack>
 
-        <Heading text="Tambah Transaksi Baru" />
-
-        <Button
-          rightIcon={<MdPayment />}
-          bg={"blue.600"}
-          color={"white"}
-          mt={3}
-          mb={5}
-          onClick={onOpen} // Open modal on button click
-          isLoading={loading}
-          size={{ base: "sm", md: "md" }}
-          isDisabled={kolomMenu.length === 0} // Disable button if no menu selected
-          _hover={{ bg: "blue.700" }}
-        >
-          Simpan Transaksi
-        </Button>
-
+        <Heading text="Buat Transaksi Baru" />
 
         <AlertNotification status={status} message={message} />
 
@@ -363,18 +347,6 @@ export default function index() {
           </ModalContent>
         </Modal>
 
-
-        <Box
-          bg="transparent"
-          p={{ base: 3, md: 4 }} // Kurangi padding di layar kecil
-          rounded="lg"
-          shadow="md"
-          border="1px"
-          borderColor={borderColor}
-          mb={6}
-        >
-        </Box>
-
         {/* Bagian Minuman */}
         <Box
           bg="white"
@@ -382,6 +354,7 @@ export default function index() {
           rounded="lg"
           shadow="md"
           display="inline-block"
+          mt={5}
         >
           <Heading text="Minuman" />
         </Box>
@@ -404,6 +377,7 @@ export default function index() {
                   flexDirection="column"
                   alignItems="center"
                   bgColor={"white"}
+                  shadow="xl"
                 >
                   <Image
                     src={`${BASE_API_IMAGE}/${item.gambar}`}
@@ -501,6 +475,7 @@ export default function index() {
                   flexDirection="column"
                   alignItems="center"
                   bgColor={"white"}
+                  shadow="xl"
                 >
                   <Image
                     src={`${BASE_API_IMAGE}/${item.gambar}`}
@@ -568,6 +543,20 @@ export default function index() {
               );
             })}
         </SimpleGrid>
+        <Flex justifyContent="flex-end" mt={10}>
+          <Button
+            rightIcon={<MdPayment />}
+            bg={"blue.600"}
+            color={"white"}
+            onClick={onOpen} // Open modal on button click
+            isLoading={loading}
+            size={{ base: "sm", md: "md" }}
+            isDisabled={kolomMenu.length === 0} // Disable button if no menu selected
+            _hover={{ bg: "blue.700" }}
+          >
+            Simpan Transaksi
+          </Button>
+        </Flex>
       </Box>
     </Container>
   );

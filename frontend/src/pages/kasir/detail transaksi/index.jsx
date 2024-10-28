@@ -128,7 +128,7 @@ export default function index() {
 
           <Box w={{ md: "40%", lg: "30%", xl: "10%" }}>
             <Link to={`/dashboard/kasir/transaksi/${id}/cetak`}>
-              <Button colorScheme={"blue"} size={"md"} w={"full"} isLoading={loading}>
+              <Button colorScheme={"blue"} size={"md"} w={"full"} isLoading={loading} isDisabled={!isLunas}>
                 Cetak
               </Button>
             </Link>
