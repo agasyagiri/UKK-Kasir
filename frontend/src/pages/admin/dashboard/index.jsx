@@ -57,21 +57,14 @@ export default function Index() {
     <Container>
       {/* Box utama */}
       <Box
-        textAlign="center"
-        display="flex"
-        flexDir="column"
-        alignItems="center"
+        textAlign={{ base: "center", md: "center" }} // Pusatkan teks pada layar kecil dan sedang
+        display={"flex"}
+        flexDir={"column"}
+        alignItems={"center"}
         gap={5}
-        w="full"
-        maxW="1000px" // Batas maksimal lebar box
-        bg="white" // Warna latar putih
-        p={10} // Padding untuk memberi ruang di sekitar konten
-        borderRadius="2xl" // Sudut melengkung yang lebih lembut
-        boxShadow="2xl" // Bayangan yang lebih kuat
-        position="absolute"
-        top="50%"
-        left="50%"
-        transform="translate(-50%, -50%)"
+        w={"full"}
+        pt={{ base: "100", md: "12" }} // Padding top lebih besar di layar sedang
+        mt={{ md: "12" }} // Margin top lebih besar di layar sedang
       >
         
           {/* Heading Dashboard */}

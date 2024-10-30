@@ -28,28 +28,23 @@ export default function Index() {
   return (
     // tampilkan container
     <Container>
-      {/* Tampilkan heading, text, dan user dari komponen yang sudah diimport */}
+      {/*  tampilkan heading, text, dan user dari komponen yang sudah diimport */}
       <Box
-        textAlign="center"
-        display="flex"
-        flexDir="column"
-        alignItems="center"
+        textAlign={"center"}
+        display={"flex"}
+        flexDir={"column"}
+        alignItems={"center"}
         gap={5}
-        w="full"
-        maxW="850px" // Batas maksimal lebar box
-        bg="white" // Warna latar putih
-        p={10} // Padding untuk memberi ruang di sekitar konten
-        borderRadius="2xl" // Sudut melengkung yang lebih lembut
-        boxShadow="2xl" // Bayangan yang lebih kuat
-        position="absolute"
-        top="50%"
-        left="50%"
-        transform="translate(-50%, -50%)"
+        w={"full"}
+        position={"absolute"}
+        top={"50%"}
+        left={"50%"}
+        transform={"translate(-50%, -50%)"}
       >
-        {/* Tampilkan heading dan text dari komponen yang sudah diimport dengan membawa props */}
+        {/* tampilkan heading dan text dari komponen yang sudah diimport dengan membawa props */}
         <HeadingDashboard text="Selamat Datang di Dashboard Kasir" />
-        <Text fontWeight={500} fontSize="xl">
-          {/* Tampilkan user dari state user */}
+        <Text fontWeight={500} fontSize={"xl"}>
+          {/* tampilkan user dari state user */}
           Saat ini anda login sebagai : {user?.nama_user}
         </Text>
 

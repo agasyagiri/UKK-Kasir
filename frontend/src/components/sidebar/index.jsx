@@ -28,9 +28,9 @@ export default function Sidebar() {
 
   return (
     <Box
-      w={{ base: "full", md: "17rem" }}
+      w={{ base: "full", md: "16rem" }}
       h={{ base: "auto", md: "full" }}
-      bgColor={"rgba(0, 0, 0, 0.2)"}
+      bgColor={"rgba(0, 0, 0, 0.1)"}
       px={{ base: 4, md: 0 }}
       py={5}
       zIndex={10}

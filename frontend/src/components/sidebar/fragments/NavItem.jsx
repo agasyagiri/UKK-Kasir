@@ -15,11 +15,11 @@ export default function NavItem({ label, link, icon }) {
         w="full"
         px={10}
         py={6}
-        fontWeight="medium"
+        fontWeight="semibold"
         bg={isActive ? "#0C359E" : "transparent"}
         color={isActive ? "white" : "#082b70"}
         borderRadius="70px 0px 0px 70px"
-        boxShadow={isActive ? "44px 0px 0px 0px #0C359E" : "none"}
+        boxShadow={isActive ? "36px 0px 0px 0px #0C359E" : "none"}
         _hover={{
           bg: isActive ? "#0C359E" : "transparent",
           
